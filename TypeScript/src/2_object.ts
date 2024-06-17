@@ -53,15 +53,15 @@ interface NewObjInf extends ObjInf{
 }
 
 
+
+
 const obj3: NewObjInf = {
     height: 67,
     weight: 76,
     color: "#ds33k"
 }
 
-
-
-const chiko: NewObjInf = {
+const obj4: NewObjInf = {
     height: 67,
     weight: 76,
     color: "#ds33k",
@@ -70,4 +70,4 @@ const chiko: NewObjInf = {
     }
 }
 
-// chiko?.func(34,54);
+// obj4?.func(34,54);

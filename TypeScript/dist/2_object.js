@@ -19,7 +19,7 @@ const obj3 = {
     weight: 76,
     color: "#ds33k"
 };
-const chiko = {
+const obj4 = {
     height: 67,
     weight: 76,
     color: "#ds33k",
@@ -27,4 +27,4 @@ const chiko = {
         console.log("mul : ", n * m);
     }
 };
-// chiko?.func(34,54);
+// obj4?.func(34,54);
