@@ -35,7 +35,6 @@ class Player{
         public weight: number,
         protected power?: number
     ){
-
         this.id = String(Math.random()*100)
     }
 
