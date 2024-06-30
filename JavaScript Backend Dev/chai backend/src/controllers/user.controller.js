@@ -401,6 +401,96 @@ const updateUserCoverImage = asyncHandler(async(req,res)=> {
 
 
 
+const getUserChannelProfile = asyncHandler(async(req,res)=> {
+    const {username} = req.params; // url se channerl name extract krnge
+
+    if(!username?.trim()){
+        throw new ApiError(400, "Username is missing");
+    }
+
+    const channel = await User.aggregate([
+        // stage1 - (pipeline)
+        {
+            $match: {
+                username: username?.toLowerCase(),
+            }
+        },
+        // stage2:
+        {
+            $lookup: {
+                from: "Subscription",
+                localField: "_id",
+                foreignField: "channel",        // kitne subscriber h -> channel select krne pr subscriber milenge
+                as: "subscribers"
+            }
+        },
+        // stage3:
+        {
+            $lookup: {
+                from: "Subscription",
+                localField: "_id",
+                foreignField: "subscriber",        // kitne channel subscribed kre h -> subsciber select krne pr channel milenge
+                as: "subscribedTo"
+            }
+        },
+        // stage4: original document (User) me field add krni h
+        {
+            $addFields: {
+                subscribersCount: {
+                    $size: "$subscribers",
+                },
+                channelsSubscribedToCount: {
+                    $size: "$subscribedTo"
+                },
+                isSubscribed: {
+                    $cond: {
+                        if: {$in: [req.user?._id, "$subscribers.subscriber"]},
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        // stage5: what field i need to give
+        {
+            $project: {
+                username: 1,
+                fullName: 1,
+                subscribersCount: 1,
+                channelsSubscribedToCount: 1,
+                isSubscribed: 1,
+                avatar: 1,
+                coverImage: 1,
+            }
+        }
+    ])
+
+    // console.log(channel);
+
+    if(!channel?.length){
+        throw new ApiError(400, "Channel does not exists");
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {channelDetails: channel[0]},
+            "User channel fetched successfully",
+        )
+    )
+})
+
+
+
+
+// 
+
+
+
+
+
 
 
 
@@ -414,5 +504,7 @@ export {
     getCurrentUser,
     updateAccountDetails,
     updateUserAvatar,
-    updateUserCoverImage
+    updateUserCoverImage,
+    getUserChannelProfile,
+
 }; 
